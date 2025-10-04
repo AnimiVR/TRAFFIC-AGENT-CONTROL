@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { appStore } from '@/lib/store';
 import { connectWallet, disconnectWallet, formatPublicKey, isPhantomAvailable } from '@/lib/wallet/utils';
 
@@ -98,7 +99,7 @@ export default function PhantomWallet({ onWalletConnect, className = "" }: Phant
           {isLoading ? (
             <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <img src="/images/phantomwallet.jpg" alt="Wallet" className="w-6 h-6" />
+            <Image src="/images/phantomwallet.jpg" alt="Wallet" width={24} height={24} className="w-6 h-6" />
           )}
           <span className="text-sm font-bold">
             {isLoading ? 'Connecting...' : 'Connect Wallet'}

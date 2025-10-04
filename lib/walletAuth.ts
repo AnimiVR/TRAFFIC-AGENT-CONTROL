@@ -1,5 +1,4 @@
 import { supabase, User } from './supabase';
-import { PublicKey } from '@solana/web3.js';
 
 // Wallet authentication service
 export class WalletAuthService {
@@ -21,11 +20,11 @@ export class WalletAuthService {
   async authenticateWithWallet(
     publicKey: string, 
     signature: string, 
-    message: string
-  ): Promise<{ user: User; session: any }> {
+    _message: string
+  ): Promise<{ user: User; session: unknown }> {
     try {
       // Verify signature (you can implement your own verification logic)
-      const isValidSignature = await this.verifySignature(publicKey, signature, message);
+      const isValidSignature = await this.verifySignature(publicKey, signature);
       
       if (!isValidSignature) {
         throw new Error('Invalid signature');
@@ -217,7 +216,7 @@ export class WalletAuthService {
    * Verify wallet signature (simplified version)
    * In production, you should implement proper signature verification
    */
-  private async verifySignature(publicKey: string, signature: string, message: string): Promise<boolean> {
+  private async verifySignature(publicKey: string, signature: string): Promise<boolean> {
     try {
       // This is a simplified verification
       // In production, you should use proper cryptographic verification

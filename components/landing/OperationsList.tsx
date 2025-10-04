@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MissionDetailsModal from './MissionDetailsModal';
 import { simpleMissionService } from '@/lib/simpleMissionService';
 import { getCurrentUser } from '@/lib/wallet/utils';
@@ -63,13 +63,12 @@ const OperationsList = () => {
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [missions, setMissions] = useState<Mission[]>([]);
-  const [sortOrder, setSortOrder] = useState<'random' | 'priority' | 'progress' | 'eta'>('random');
   const [user, setUser] = useState(getCurrentUser());
   const [userPoints, setUserPoints] = useState(0);
   const [walletState, setWalletState] = useState(appStore.getState().wallet);
 
   // Tạo nhiệm vụ ngẫu nhiên từ template
-  const generateRandomMission = (template: any): Mission => {
+  const generateRandomMission = (template: { code: string; description: string; type: string; location: string; difficulty: string }): Mission => {
     const statuses = ['active', 'pending', 'completed'];
     const priorities = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
     const etas = ['2h', '6h', '12h', '24h', '48h', '72h'];
@@ -81,7 +80,11 @@ const OperationsList = () => {
     const progress = status === 'completed' ? 100 : Math.floor(Math.random() * 80) + 10; // 10-90% for active/pending
     
     return {
-      ...template,
+      code: template.code,
+      description: template.description,
+      type: template.type,
+      location: template.location,
+      difficulty: template.difficulty,
       status,
       priority,
       eta,
@@ -92,35 +95,11 @@ const OperationsList = () => {
   };
 
   // Tạo danh sách nhiệm vụ ngẫu nhiên
-  const generateRandomMissions = (count: number = 8): Mission[] => {
+  const generateRandomMissions = useCallback((count: number = 8): Mission[] => {
     const shuffledTemplates = [...MISSION_TEMPLATES].sort(() => Math.random() - 0.5);
     return shuffledTemplates.slice(0, count).map(template => generateRandomMission(template));
-  };
+  }, []);
 
-  // Sắp xếp nhiệm vụ theo tiêu chí
-  const sortMissions = (missions: Mission[], order: string): Mission[] => {
-    const sorted = [...missions];
-    
-    switch (order) {
-      case 'priority':
-        const priorityOrder = { 'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
-        return sorted.sort((a, b) => priorityOrder[b.priority as keyof typeof priorityOrder] - priorityOrder[a.priority as keyof typeof priorityOrder]);
-      
-      case 'progress':
-        return sorted.sort((a, b) => b.progress - a.progress);
-      
-      case 'eta':
-        return sorted.sort((a, b) => {
-          const aHours = parseInt(a.eta.replace('h', '')) || parseInt(a.eta.replace('d', '')) * 24;
-          const bHours = parseInt(b.eta.replace('h', '')) || parseInt(b.eta.replace('d', '')) * 24;
-          return aHours - bHours;
-        });
-      
-      case 'random':
-      default:
-        return sorted.sort(() => Math.random() - 0.5);
-    }
-  };
 
   // Load user data and missions
   useEffect(() => {
@@ -224,7 +203,7 @@ const OperationsList = () => {
     };
     
     loadMissions();
-  }, []);
+  }, [generateRandomMissions]);
 
   // Tắt auto-refresh vì chỉ có 1 mission đơn giản
   // useEffect(() => {
@@ -336,7 +315,7 @@ const OperationsList = () => {
             </div>
           </div>
         </div>
-        <p className="text-gray-400 text-sm font-mono mb-3">Click "Join Mission" to earn points instantly! Missions sorted by reward points.</p>
+        <p className="text-gray-400 text-sm font-mono mb-3">Click &quot;Join Mission&quot; to earn points instantly! Missions sorted by reward points.</p>
         
         {/* Sort Controls - Hidden vì chỉ có 1 mission */}
         {/* <div className="flex items-center space-x-2 mb-4">

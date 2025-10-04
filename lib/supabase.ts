@@ -60,7 +60,7 @@ export interface PointsTransaction {
   amount: number;
   type: 'earned' | 'spent' | 'bonus' | 'penalty' | 'refund';
   description: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 

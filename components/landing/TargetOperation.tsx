@@ -72,7 +72,7 @@ const COUNTRIES_DATA = [
   }
 ];
 
-const TargetOperation: React.FC<TargetOperationProps> = ({ region, description }) => {
+const TargetOperation: React.FC<TargetOperationProps> = ({ region }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [pulseIntensity, setPulseIntensity] = useState(0.8);
   const [scanProgress, setScanProgress] = useState(0);

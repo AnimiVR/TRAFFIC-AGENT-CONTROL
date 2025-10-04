@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Header from '@/components/landing/Header';
 import WorkTable from '../../components/WorkTable';
 import ControlBar from '../../components/ControlBar';
 import RadarCanvas from '../../components/RadarCanvas';
@@ -23,7 +22,7 @@ export default function TrafficAgentPage() {
             <h1 className="text-2xl tracking-tighter font-bold text-gray-500 text-spacing-px">TRAFFIC AGENT CONTROL</h1>
             <p className="mt-1 text-[10px] leading-none text-gray-500">
               <a
-                href="https://github.com/gkamradt/agenttrafficcontrol"
+                href="https://github.com/AnimiVR/TRAFFIC-AGENT-CONTROL"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-gray-400 italic underline"
@@ -32,12 +31,12 @@ export default function TrafficAgentPage() {
               </a>
               <span className="px-1">•</span>
               <a
-                href="https://x.com/gregkamradt"
+                href="https://github.com/AnimiVR"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-gray-400 italic underline"
               >
-                BY GREG
+                BY ANIMIVR
               </a>
             </p>
           </div>

@@ -81,12 +81,6 @@ export async function getWalletConnectionStatus(): Promise<WalletInfo> {
  */
 function generateUsernameFromWallet(walletAddress: string): string {
   const shortKey = walletAddress.slice(0, 8).toUpperCase();
-  const names = ['WHISSPERIA', 'SHADOWSTRIKE', 'NIGHTFALL', 'GHOSTWALKER', 'STEALTHWING'];
-  const hash = walletAddress.split('').reduce((a, b) => {
-    a = ((a << 5) - a) + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-  const codeName = names[Math.abs(hash) % names.length];
   return `agent_${shortKey}`;
 }
 

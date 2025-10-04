@@ -35,7 +35,7 @@ const Header = () => {
       setOperationsCount(baseCount + Math.floor(Math.random() * 10));
       setUpdatesCount(Math.floor(Math.random() * 8) + 1);
     }
-  }, [selectedTime, timeOptions]);
+  }, [selectedTime]);
 
   const handleTimeChange = (option: typeof timeOptions[0]) => {
     setSelectedTime(option.label);
@@ -112,7 +112,7 @@ const Header = () => {
                   : 'text-gray-400 hover:text-white hover:bg-dark-border'
               }`}
             >
-              TRAFFIC AGENT
+              TRAFFIC AGENT CONTROL
             </Link>
           </div>
           

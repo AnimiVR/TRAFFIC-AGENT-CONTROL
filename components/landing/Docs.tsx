@@ -81,7 +81,7 @@ const Docs: React.FC = () => {
                 <div className="w-8 h-8 bg-accent-red rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
                 <div>
                   <h4 className="text-white font-semibold mb-2">Connect to Platform</h4>
-                  <p className="text-gray-300 mb-2">Click the "Connect Wallet" button on our platform and approve the connection in Phantom.</p>
+                  <p className="text-gray-300 mb-2">Click the &quot;Connect Wallet&quot; button on our platform and approve the connection in Phantom.</p>
                   <div className="bg-dark-card/50 rounded-lg p-4 mt-3">
                     <div className="text-green-400 font-mono text-sm mb-2">✅ Connection Successful</div>
                     <div className="text-gray-400 text-sm">Your wallet address will be displayed in the header</div>
@@ -145,11 +145,11 @@ const Docs: React.FC = () => {
                 <div className="w-8 h-8 bg-accent-red rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
                 <div>
                   <h4 className="text-white font-semibold mb-2">Join a Mission</h4>
-                  <p className="text-gray-300 mb-2">Click "Join Mission" on any available mission. You'll instantly:</p>
+                  <p className="text-gray-300 mb-2">Click &quot;Join Mission&quot; on any available mission. You&apos;ll instantly:</p>
                   <ul className="text-gray-300 space-y-1 ml-4">
-                    <li>• Earn the mission's point reward</li>
+                    <li>• Earn the mission&apos;s point reward</li>
                     <li>• See your total points increase</li>
-                    <li>• Mission status changes to "Completed"</li>
+                    <li>• Mission status changes to &quot;Completed&quot;</li>
                   </ul>
                 </div>
               </div>
@@ -158,7 +158,7 @@ const Docs: React.FC = () => {
                 <div className="w-8 h-8 bg-accent-red rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
                 <div>
                   <h4 className="text-white font-semibold mb-2">Track Your Progress</h4>
-                  <p className="text-gray-300">Monitor your points and completed missions in the dashboard. You can also view mission details by clicking "Details".</p>
+                  <p className="text-gray-300">Monitor your points and completed missions in the dashboard. You can also view mission details by clicking &quot;Details&quot;.</p>
                 </div>
               </div>
             </div>
@@ -238,8 +238,8 @@ const Docs: React.FC = () => {
                   <h4 className="text-white font-semibold mb-2">View Rankings</h4>
                   <p className="text-gray-300 mb-2">Access the leaderboard by:</p>
                   <ul className="text-gray-300 space-y-1 ml-4">
-                    <li>• Clicking "View Leaderboard" from the dashboard</li>
-                    <li>• Using the "LEADERBOARD" tab in the header</li>
+                    <li>• Clicking &quot;View Leaderboard&quot; from the dashboard</li>
+                    <li>• Using the &quot;LEADERBOARD&quot; tab in the header</li>
                     <li>• Navigating to /leaderboard directly</li>
                   </ul>
                 </div>
@@ -266,7 +266,7 @@ const Docs: React.FC = () => {
               <div className="space-y-3">
                 <div className="p-4 bg-dark-card/50 rounded-lg">
                   <div className="text-white font-semibold mb-2">🎯 Complete All Missions</div>
-                  <div className="text-gray-400 text-sm">Don't miss any available missions to maximize your points</div>
+                  <div className="text-gray-400 text-sm">Don&apos;t miss any available missions to maximize your points</div>
                 </div>
                 
                 <div className="p-4 bg-dark-card/50 rounded-lg">
@@ -303,12 +303,12 @@ const Docs: React.FC = () => {
             <div className="space-y-4">
               <div className="border-b border-dark-border pb-4">
                 <h4 className="text-white font-semibold mb-2">Q: Do I need SOL tokens to participate?</h4>
-                <p className="text-gray-300">A: No, you don't need any SOL tokens. Missions are free to join and only require wallet connection for authentication.</p>
+                <p className="text-gray-300">A: No, you don&apos;t need any SOL tokens. Missions are free to join and only require wallet connection for authentication.</p>
               </div>
 
               <div className="border-b border-dark-border pb-4">
                 <h4 className="text-white font-semibold mb-2">Q: Can I join the same mission multiple times?</h4>
-                <p className="text-gray-300">A: No, each mission can only be completed once per user. Once you join a mission, it will show as "Completed" and you cannot join it again.</p>
+                <p className="text-gray-300">A: No, each mission can only be completed once per user. Once you join a mission, it will show as &quot;Completed&quot; and you cannot join it again.</p>
               </div>
 
               <div className="border-b border-dark-border pb-4">
@@ -328,7 +328,7 @@ const Docs: React.FC = () => {
 
               <div>
                 <h4 className="text-white font-semibold mb-2">Q: How do I reset my progress for testing?</h4>
-                <p className="text-gray-300">A: Use the "Reset Missions" button on the dashboard to clear your joined missions and start fresh. Note: This only resets mission status, not your total points.</p>
+                <p className="text-gray-300">A: Use the &quot;Reset Missions&quot; button on the dashboard to clear your joined missions and start fresh. Note: This only resets mission status, not your total points.</p>
               </div>
             </div>
           </div>

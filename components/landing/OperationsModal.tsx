@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface Operation {
   id: string;
@@ -23,7 +23,6 @@ const OperationsModal: React.FC<OperationsModalProps> = ({ isOpen, onClose }) =>
   const [selectedOperation, setSelectedOperation] = useState<Operation | null>(null);
   const [filter, setFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'COMPLETED' | 'FAILED'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
-  const [animationPhase, setAnimationPhase] = useState(0);
 
   // Mock operations data
   const operations: Operation[] = [
@@ -95,15 +94,6 @@ const OperationsModal: React.FC<OperationsModalProps> = ({ isOpen, onClose }) =>
     }
   ];
 
-  // Animation effect
-  useEffect(() => {
-    if (isOpen) {
-      const interval = setInterval(() => {
-        setAnimationPhase(prev => (prev + 1) % 4);
-      }, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [isOpen]);
 
   const filteredOperations = operations.filter(op => {
     const matchesFilter = filter === 'ALL' || op.status === filter;

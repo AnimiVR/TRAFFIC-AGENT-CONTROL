@@ -105,8 +105,19 @@ export class SimpleMissionService {
         return false;
       }
 
-      // Award points immediately upon joining
-      const currentPoints = user.total_points || 0;
+      // Get current user points from database
+      const { data: userData, error: userDataError } = await supabase
+        .from('users')
+        .select('total_points, experience_points')
+        .eq('id', user.id)
+        .single();
+
+      if (userDataError || !userData) {
+        console.error('Error fetching user data:', userDataError);
+        return false;
+      }
+
+      const currentPoints = userData.total_points || 0;
       const newPoints = currentPoints + mission.points_reward;
       
       // Update user points in Supabase database
@@ -124,8 +135,8 @@ export class SimpleMissionService {
       }
       
       // Update user points in localStorage
-      user.total_points = newPoints;
-      localStorage.setItem('traffic_agent_user', JSON.stringify(user));
+      const updatedUser = { ...user, total_points: newPoints };
+      localStorage.setItem('traffic_agent_user', JSON.stringify(updatedUser));
       
       // Track joined mission
       joinedMissions.push(missionCode);
@@ -136,9 +147,9 @@ export class SimpleMissionService {
       console.log(`💰 Total points: ${currentPoints} → ${newPoints}`);
       
       // Debug: Check localStorage after update
-      const updatedUser = JSON.parse(localStorage.getItem('traffic_agent_user') || '{}');
-      console.log('🔍 Updated user in localStorage:', updatedUser);
-      console.log('🔍 Updated total_points:', updatedUser.total_points);
+      const debugUser = JSON.parse(localStorage.getItem('traffic_agent_user') || '{}');
+      console.log('🔍 Updated user in localStorage:', debugUser);
+      console.log('🔍 Updated total_points:', debugUser.total_points);
       
       return true;
     } catch (error) {
@@ -204,10 +215,13 @@ export class SimpleMissionService {
 
       if (data) {
         // Update localStorage with latest data from database
-        user.total_points = data.total_points || 0;
-        user.experience_points = data.experience_points || 0;
-        user.level = data.level || 1;
-        localStorage.setItem('traffic_agent_user', JSON.stringify(user));
+        const updatedUser = { 
+          ...user, 
+          total_points: data.total_points || 0,
+          experience_points: data.experience_points || 0,
+          level: data.level || 1
+        };
+        localStorage.setItem('traffic_agent_user', JSON.stringify(updatedUser));
         console.log('✅ User data synced from database:', data);
       }
     } catch (error) {
@@ -237,7 +251,8 @@ export class SimpleMissionService {
       if (error) {
         console.error('Error fetching user points from database:', error);
         // Fallback to localStorage
-        const points = user.total_points || 0;
+        const userData = JSON.parse(localStorage.getItem('traffic_agent_user') || '{}');
+        const points = userData.total_points || 0;
         console.log('🔍 getUserPoints - Fallback to localStorage:', points);
         return points;
       }
@@ -246,8 +261,8 @@ export class SimpleMissionService {
       console.log('🔍 getUserPoints - From database:', points);
       
       // Update localStorage with latest data
-      user.total_points = points;
-      localStorage.setItem('traffic_agent_user', JSON.stringify(user));
+      const updatedUser = { ...user, total_points: points };
+      localStorage.setItem('traffic_agent_user', JSON.stringify(updatedUser));
       
       return points;
     } catch (error) {

@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { appStore } from '@/lib/store';
-import { formatPublicKey, connectWallet, disconnectWallet, isPhantomAvailable, getCurrentUser, isUserAuthenticated } from '@/lib/wallet/utils';
-import { walletAuthService } from '@/lib/walletAuth';
+import { formatPublicKey, connectWallet, disconnectWallet, isPhantomAvailable, getCurrentUser } from '@/lib/wallet/utils';
 
 const AgentDetails = () => {
   const [walletState, setWalletState] = useState(appStore.getState().wallet);
@@ -33,9 +32,9 @@ const AgentDetails = () => {
         walletConnected: true,
         publicKey: user.wallet_address,
         walletName: 'Phantom',
-        totalPoints: user.total_points,
-        level: user.level,
-        experience: user.experience_points
+        totalPoints: 0, // Will be fetched separately
+        level: 1,
+        experience: 0
       };
     }
     

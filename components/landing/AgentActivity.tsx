@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 
 const AgentActivity = () => {
   const [selectedMetric, setSelectedMetric] = useState('Total');
-  const [animationPhase, setAnimationPhase] = useState(0);
   const [liveData, setLiveData] = useState({
     total: 72,
     success: 45,
@@ -33,12 +32,6 @@ const AgentActivity = () => {
   }, []);
 
   // Animation phase
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimationPhase(prev => (prev + 1) % 4);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Pulse effect
   useEffect(() => {

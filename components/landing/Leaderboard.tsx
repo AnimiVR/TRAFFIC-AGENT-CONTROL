@@ -17,7 +17,7 @@ interface LeaderboardUser {
 const Leaderboard: React.FC = () => {
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const [currentUser] = useState(getCurrentUser());
   const [sortBy, setSortBy] = useState<'total_points' | 'level' | 'created_at'>('total_points');
   const [timeFilter, setTimeFilter] = useState<'all' | 'week' | 'month'>('all');
 
@@ -115,7 +115,7 @@ const Leaderboard: React.FC = () => {
             <span className="text-xs text-gray-500 font-mono">Sort by:</span>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'total_points' | 'level' | 'created_at')}
               className="bg-dark-border text-white text-xs px-2 py-1 rounded border border-gray-600"
             >
               <option value="total_points">Total Points</option>
@@ -128,7 +128,7 @@ const Leaderboard: React.FC = () => {
             <span className="text-xs text-gray-500 font-mono">Time:</span>
             <select
               value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value as any)}
+              onChange={(e) => setTimeFilter(e.target.value as 'all' | 'week' | 'month')}
               className="bg-dark-border text-white text-xs px-2 py-1 rounded border border-gray-600"
             >
               <option value="all">All Time</option>
@@ -171,7 +171,7 @@ const Leaderboard: React.FC = () => {
       {/* Leaderboard Table */}
       {!loading && (
         <div className="space-y-2">
-          {users.map((user, index) => (
+          {users.map((user) => (
             <div
               key={user.id}
               className={`flex items-center justify-between p-4 rounded-lg transition-all duration-200 hover:scale-105 ${

@@ -70,7 +70,7 @@ const SoundEffects = () => {
       if (!element || !element.closest) return false;
       try {
         return !!element.closest(selector);
-      } catch (error) {
+      } catch {
         return false;
       }
     };

@@ -13,7 +13,7 @@ interface LandingAppProps {
   onBackToTraffic?: () => void;
 }
 
-const LandingApp: React.FC<LandingAppProps> = ({ onBackToTraffic }) => {
+const LandingApp: React.FC<LandingAppProps> = () => {
   return (
     <div className="min-h-screen bg-dark-bg text-white">
       <SoundEffects />

@@ -37,7 +37,7 @@ export class PointsService {
   /**
    * Get user's points transactions
    */
-  async getUserTransactions(userId: string, limit: number = 10): Promise<any[]> {
+  async getUserTransactions(userId: string, limit: number = 10): Promise<unknown[]> {
     try {
       const { data, error } = await supabase
         .from('points_transactions')
@@ -69,12 +69,24 @@ export class PointsService {
     missionId?: string
   ): Promise<boolean> {
     try {
+      // Get current user data
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('total_points, experience_points')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userData) {
+        console.error('Error fetching user data:', userError);
+        return false;
+      }
+
       // Update user's total points
       const { error: updateError } = await supabase
         .from('users')
         .update({ 
-          total_points: supabase.sql`total_points + ${amount}`,
-          experience_points: supabase.sql`experience_points + ${amount}`
+          total_points: (userData.total_points || 0) + amount,
+          experience_points: (userData.experience_points || 0) + amount
         })
         .eq('id', userId);
 
@@ -126,7 +138,7 @@ export class PointsService {
   /**
    * Get leaderboard data
    */
-  async getLeaderboard(limit: number = 10): Promise<any[]> {
+  async getLeaderboard(limit: number = 10): Promise<unknown[]> {
     try {
       const { data, error } = await supabase
         .from('leaderboards')

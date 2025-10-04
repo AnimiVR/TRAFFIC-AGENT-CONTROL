@@ -42,7 +42,7 @@ const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({ isOpen, onClo
       
       if (success) {
         const newPoints = await simpleMissionService.getUserPoints();
-        alert(`🎉 Mission ${mission.code} completed!\n💰 Earned ${mission.points_reward} points!\n📊 Total points: ${newPoints}`);
+        alert(`🎉 Mission ${mission.code} completed!\n💰 Earned 1 point!\n📊 Total points: ${newPoints}`);
         
         // Call parent callback if provided
         if (onMissionCompleted) {

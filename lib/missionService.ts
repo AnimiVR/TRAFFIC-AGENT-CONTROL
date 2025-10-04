@@ -156,10 +156,22 @@ export class MissionService {
           completed_at: new Date().toISOString()
         })
         .eq('user_id', user.id)
-        .eq('mission_id', missionId);
+        .eq('mission_id', mission.id);
 
       if (updateError) {
         console.error('Error updating mission status:', updateError);
+        return false;
+      }
+
+      // Get current user data
+      const { data: currentUser, error: userError } = await supabase
+        .from('users')
+        .select('total_points, experience_points')
+        .eq('id', user.id)
+        .single();
+
+      if (userError || !currentUser) {
+        console.error('Error fetching user data:', userError);
         return false;
       }
 
@@ -167,8 +179,8 @@ export class MissionService {
       const { error: pointsError } = await supabase
         .from('users')
         .update({
-          total_points: supabase.sql`total_points + ${mission.points_reward}`,
-          experience_points: supabase.sql`experience_points + ${mission.points_reward}`
+          total_points: (currentUser.total_points || 0) + mission.points_reward,
+          experience_points: (currentUser.experience_points || 0) + mission.points_reward
         })
         .eq('id', user.id);
 
@@ -182,7 +194,7 @@ export class MissionService {
         .from('points_transactions')
         .insert({
           user_id: user.id,
-          mission_id: missionId,
+          mission_id: mission.id,
           amount: mission.points_reward,
           type: 'earned',
           description: `Completed mission: ${mission.code}`,
