@@ -21,9 +21,9 @@ const Docs: React.FC = () => {
       content: (
         <div className="space-y-6">
           <div className="bg-dark-border/30 rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Welcome to Traffic Agent Control</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Welcome to Agent Mission Control ( AMC )</h3>
             <p className="text-gray-300 leading-relaxed mb-4">
-              Traffic Agent Control is a decentralized intelligence platform where agents compete to complete missions and earn points. 
+              Agent Mission Control ( AMC ) is a decentralized intelligence platform where agents compete to complete missions and earn points. 
               Connect your wallet, join missions, and climb the leaderboard to become the top agent!
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -363,7 +363,7 @@ const Docs: React.FC = () => {
             <span className="text-xs text-green-400 font-mono">UPDATED</span>
           </div>
         </div>
-        <p className="text-gray-400 text-sm font-mono mb-4">Complete guide to using Traffic Agent Control platform</p>
+        <p className="text-gray-400 text-sm font-mono mb-4">Complete guide to using Agent Mission Control ( AMC ) platform</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -421,7 +421,7 @@ const Docs: React.FC = () => {
               href="/traffic-agent"
               className="text-gray-400 hover:text-white text-sm font-semibold transition-colors duration-200 font-mono"
             >
-              Traffic Agent Control &gt;&gt;&gt;
+              Agent Mission Control ( AMC ) &gt;&gt;&gt;
             </Link>
           </div>
         </div>

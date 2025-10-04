@@ -500,7 +500,7 @@ const OperationsList = () => {
               href="/traffic-agent"
               className="text-gray-400 hover:text-white text-sm font-semibold transition-colors duration-200 font-mono"
             >
-              Traffic Agent Control &gt;&gt;&gt;
+              Agent Mission Control ( AMC ) &gt;&gt;&gt;
             </Link>
           </div>
         </div>

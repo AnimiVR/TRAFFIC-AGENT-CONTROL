@@ -284,7 +284,7 @@ export class WalletAuthService {
     const event = new CustomEvent('showNotification', {
       detail: {
         type: 'success',
-        title: '🎉 Welcome to Traffic Agent Control!',
+        title: '🎉 Welcome to Agent Mission Control ( AMC )!',
         message: `Welcome ${username}! You've earned 1 point for connecting your wallet.`,
         duration: 5000,
         icon: '🎯'

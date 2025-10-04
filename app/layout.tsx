@@ -53,27 +53,27 @@ const jetBrainsMono = localFont({
 export const metadata: Metadata = {
   // Helps Next generate absolute URLs for OG/Twitter images
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "Traffic Agent  Control (TAC)",
-  description: "Direct the vibe of your agents in the Traffic Agent Control Room",
+  title: "Agent Mission Control ( AMC )",
+  description: "Direct the vibe of your agents in the Agent Mission Control ( AMC ) Room",
   openGraph: {
-    title: "Traffic Agent  Control (TAC)",
-    description: "Direct the vibe of your agents in the Traffic Agent Control Room",
+    title: "Agent Mission Control ( AMC )",
+    description: "Direct the vibe of your agents in the Agent Mission Control ( AMC ) Room",
     type: "website",
     url: "/",
-    siteName: "Traffic Agent  Control (TAC)",
+    siteName: "Agent Mission Control ( AMC )",
     images: [
       {
         url: "/images/ATC_OG.png",
         width: 2048,
         height: 1280,
-        alt: "Traffic Agent  Control (TAC)",
+        alt: "Agent Mission Control ( AMC )",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Traffic Agent  Control (TAC)",
-    description: "Direct the vibe of your agents in the Traffic Agent Control Room",
+    title: "Agent Mission Control ( AMC )",
+    description: "Direct the vibe of your agents in the Agent Mission Control ( AMC ) Room",
     images: ["/images/ATC_OG.png"],
   },
 };

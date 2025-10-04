@@ -13,7 +13,7 @@ export default function ProjectDescription() {
 
   const desc = useMemo(() => {
     const p = getPlanByName(plan) || ALL_PLANS[0];
-    return p.description || 'Traffic Agent Control';
+    return p.description || 'Agent Mission Control ( AMC )';
   }, [plan]);
 
   return <span>{desc}</span>;

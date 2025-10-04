@@ -25,7 +25,7 @@ export default function DocsPage() {
               DOCUMENTATION
             </h1>
             <p className="text-gray-400 font-mono">
-              Complete guide to Traffic Agent Control platform
+              Complete guide to Agent Mission Control ( AMC ) platform
             </p>
           </div>
 

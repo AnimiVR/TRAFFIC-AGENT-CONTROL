@@ -1,6 +1,6 @@
-# Contributing to Traffic Agent Control
+# Contributing to Agent Mission Control ( AMC )
 
-Thank you for your interest in contributing to Traffic Agent Control! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Agent Mission Control ( AMC )! This document provides guidelines and information for contributors.
 
 ## 🚀 Getting Started
 
@@ -213,7 +213,7 @@ npm run test:coverage
 
 ## 📄 License
 
-By contributing to Traffic Agent Control, you agree that your contributions will be licensed under the MIT License.
+By contributing to Agent Mission Control ( AMC ), you agree that your contributions will be licensed under the MIT License.
 
 ## 🙏 Recognition
 
@@ -222,4 +222,4 @@ Contributors will be recognized in:
 - Release notes
 - GitHub contributors page
 
-Thank you for contributing to Traffic Agent Control! 🚀
+Thank you for contributing to Agent Mission Control ( AMC )! 🚀

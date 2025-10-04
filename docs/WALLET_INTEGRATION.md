@@ -1,6 +1,6 @@
 # Phantom Wallet Integration
 
-Tài liệu này mô tả cách tích hợp Phantom wallet vào ứng dụng Traffic Agent Control.
+Tài liệu này mô tả cách tích hợp Phantom wallet vào ứng dụng Agent Mission Control ( AMC ).
 
 ## Tổng quan
 

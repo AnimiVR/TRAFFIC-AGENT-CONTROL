@@ -29,7 +29,7 @@ type StoryConfig = {
 // Default story/tutorial script. Tweak text and timings here.
 const STORY: StoryConfig = {
   lines: [
-    { text: "Initializing Traffic Agent Control..", pauseAfterMs: 3000, cursorChar: '.', blinkMs: 500 },
+    { text: "Initializing Agent Mission Control ( AMC )..", pauseAfterMs: 3000, cursorChar: '.', blinkMs: 500 },
     { text: "Connecting to ATC radio..", pauseAfterMs: 3200, cursorChar: '.', blinkMs: 300 },
     { text: "Connecting ambient music..", pauseAfterMs: 3200, cursorChar: '.', blinkMs: 600 },
     { text: "Enjoy the vibes of agents working..", pauseAfterMs: 4200, cursorChar: '.', blinkMs: 450 },

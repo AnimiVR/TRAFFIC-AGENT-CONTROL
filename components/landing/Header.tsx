@@ -13,13 +13,17 @@ const timeOptions = [
 
 const Header = () => {
   const [selectedTime, setSelectedTime] = useState('1 Day');
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [operationsCount, setOperationsCount] = useState(20);
   const [updatesCount, setUpdatesCount] = useState(4);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
-  // Update current time every second
+  // Initialize client-side rendering and current time
   useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+    
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -64,7 +68,7 @@ const Header = () => {
           <h1 className="text-2xl font-bold text-white font-mono tracking-wider">
             {pathname === '/leaderboard' ? 'AGENT LEADERBOARD' : 
              pathname === '/docs' ? 'DOCUMENTATION' : 
-             pathname === '/traffic-agent' ? 'TRAFFIC AGENT CONTROL' : 'OPERATIONS DASHBOARD'}
+             pathname === '/traffic-agent' ? 'AGENT MISSION CONTROL' : 'AGENT MISSION CONTROL'}
           </h1>
           <p className="text-gray-400 text-sm mt-1 font-mono">
             {pathname === '/leaderboard' ? 'Agent Performance Rankings' : 
@@ -112,7 +116,23 @@ const Header = () => {
                   : 'text-gray-400 hover:text-white hover:bg-dark-border'
               }`}
             >
-              TRAFFIC AGENT CONTROL
+              Agent Mission Control ( AMC )
+            </Link>
+
+            <Link 
+              href="http://status.agentmissioncontrol.com"
+              target='_blank'
+              className='text-xs font-mono px-3 py-1 rounded transition-all duration-200 text-gray-400 hover:text-white hover:bg-dark-border'
+            >
+              STATUS
+            </Link>
+
+            <Link 
+              href="https://x.com/amcon_sol"
+              target='_blank'
+              className='text-xs font-mono px-3 py-1 rounded transition-all duration-200 text-gray-400 hover:text-white hover:bg-dark-border'
+            >
+              X
             </Link>
           </div>
           
@@ -122,16 +142,18 @@ const Header = () => {
               <span className="text-xs text-gray-400 font-mono">SYSTEM ONLINE</span>
             </div>
             <div className="text-xs text-gray-400 font-mono">
-              {currentTime.toLocaleString('en-US', {
+              {isClient && currentTime ? currentTime.toLocaleString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit'
-              })}
+              }) : '--:--:--'}
             </div>
+
           </div>
+          
         </div>
         
         <div className="flex items-center space-x-6">
