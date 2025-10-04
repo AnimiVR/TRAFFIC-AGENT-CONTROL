@@ -20,7 +20,7 @@ export default function PhantomWallet({ onWalletConnect, className = "" }: Phant
   const debugWalletStatus = () => {
     console.log('🔍 Wallet Debug Info:');
     console.log('- Window available:', typeof window !== 'undefined');
-    console.log('- Solana object:', typeof window !== 'undefined' ? (window as any).solana : 'N/A');
+    console.log('- Solana object:', typeof window !== 'undefined' ? window.solana : 'N/A');
     console.log('- Phantom available:', isPhantomAvailable());
     console.log('- Wallet state:', walletState);
   };

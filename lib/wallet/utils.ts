@@ -1,6 +1,16 @@
 // Wallet utility functions for Solana/Phantom integration
 import { simpleSupabaseService, SimpleUser } from '../simpleSupabase';
 
+// Interface for Phantom wallet
+interface PhantomWallet {
+  connect(): Promise<{ publicKey: { toBase58(): string } }>;
+  disconnect(): Promise<void>;
+  signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>;
+  on(event: string, callback: () => void): void;
+  publicKey?: { toBase58(): string };
+  isPhantom?: boolean;
+}
+
 export interface WalletInfo {
   isAvailable: boolean;
   isConnected: boolean;
@@ -24,7 +34,7 @@ export function isPhantomAvailable(): boolean {
   if (typeof window === 'undefined') return false;
   
   // Check for Phantom wallet specifically
-  const phantom = (window as any).solana;
+  const phantom = window.solana as PhantomWallet | undefined;
   if (!phantom) return false;
   
   // Check if it's actually Phantom (not just any Solana wallet)
@@ -133,7 +143,7 @@ export async function connectWallet(): Promise<AuthResult> {
       };
     }
 
-    const wallet = (window as any).solana;
+    const wallet = window.solana;
     if (!wallet) {
       return {
         success: false,
@@ -260,6 +270,7 @@ declare global {
       signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>;
       on(event: string, callback: () => void): void;
       publicKey?: { toBase58(): string };
+      isPhantom?: boolean;
     };
   }
 }

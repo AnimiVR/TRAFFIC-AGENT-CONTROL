@@ -20,11 +20,11 @@ export class WalletAuthService {
   async authenticateWithWallet(
     publicKey: string, 
     signature: string, 
-    _message: string
+    message: string
   ): Promise<{ user: User; session: unknown }> {
     try {
       // Verify signature (you can implement your own verification logic)
-      const isValidSignature = await this.verifySignature(publicKey, signature);
+      const isValidSignature = await this.verifySignature(publicKey, signature, message);
       
       if (!isValidSignature) {
         throw new Error('Invalid signature');
@@ -216,11 +216,11 @@ export class WalletAuthService {
    * Verify wallet signature (simplified version)
    * In production, you should implement proper signature verification
    */
-  private async verifySignature(publicKey: string, signature: string): Promise<boolean> {
+  private async verifySignature(publicKey: string, signature: string, message: string): Promise<boolean> {
     try {
       // This is a simplified verification
       // In production, you should use proper cryptographic verification
-      return signature.length > 0 && publicKey.length > 0;
+      return signature.length > 0 && publicKey.length > 0 && message.length > 0;
     } catch (error) {
       console.error('Signature verification failed:', error);
       return false;
