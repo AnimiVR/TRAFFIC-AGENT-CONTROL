@@ -21,7 +21,37 @@ export interface AuthResult {
  * Check if Phantom wallet is available in the browser
  */
 export function isPhantomAvailable(): boolean {
-  return typeof window !== 'undefined' && !!window.solana;
+  if (typeof window === 'undefined') return false;
+  
+  // Check for Phantom wallet specifically
+  const phantom = (window as any).solana;
+  if (!phantom) return false;
+  
+  // Check if it's actually Phantom (not just any Solana wallet)
+  return phantom.isPhantom === true;
+}
+
+/**
+ * Wait for Phantom wallet to be available (with timeout)
+ */
+export async function waitForPhantom(timeout: number = 3000): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (isPhantomAvailable()) {
+      resolve(true);
+      return;
+    }
+
+    const startTime = Date.now();
+    const checkInterval = setInterval(() => {
+      if (isPhantomAvailable()) {
+        clearInterval(checkInterval);
+        resolve(true);
+      } else if (Date.now() - startTime > timeout) {
+        clearInterval(checkInterval);
+        resolve(false);
+      }
+    }, 100);
+  });
 }
 
 /**
@@ -89,15 +119,36 @@ function generateUsernameFromWallet(walletAddress: string): string {
  */
 export async function connectWallet(): Promise<AuthResult> {
   try {
-    if (!isPhantomAvailable()) {
+    if (typeof window === 'undefined') {
       return {
         success: false,
-        error: 'Phantom wallet not available. Please install Phantom wallet from https://phantom.app/',
+        error: 'Wallet connection is only available in browser environment',
       };
     }
 
-    const wallet = window.solana!;
+    if (!isPhantomAvailable()) {
+      return {
+        success: false,
+        error: 'Phantom wallet not found. Please install Phantom wallet from https://phantom.app/',
+      };
+    }
+
+    const wallet = (window as any).solana;
+    if (!wallet) {
+      return {
+        success: false,
+        error: 'Solana wallet not detected. Please install Phantom wallet.',
+      };
+    }
+
     const response = await wallet.connect();
+    if (!response || !response.publicKey) {
+      return {
+        success: false,
+        error: 'Failed to get public key from wallet',
+      };
+    }
+
     const publicKey = response.publicKey.toBase58();
     const username = generateUsernameFromWallet(publicKey);
     
@@ -132,9 +183,24 @@ export async function connectWallet(): Promise<AuthResult> {
     };
   } catch (error: unknown) {
     console.error('Wallet connection error:', error);
+    
+    let errorMessage = 'Failed to connect wallet';
+    
+    if (error instanceof Error) {
+      if (error.message.includes('User rejected')) {
+        errorMessage = 'User rejected wallet connection';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Wallet connection timeout. Please try again.';
+      } else if (error.message.includes('not found')) {
+        errorMessage = 'Phantom wallet not found. Please install Phantom wallet from https://phantom.app/';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to connect wallet',
+      error: errorMessage,
     };
   }
 }

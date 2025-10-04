@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { appStore } from '@/lib/store';
-import { connectWallet, disconnectWallet, formatPublicKey, isPhantomAvailable } from '@/lib/wallet/utils';
+import { connectWallet, disconnectWallet, formatPublicKey, isPhantomAvailable, waitForPhantom } from '@/lib/wallet/utils';
 
 interface PhantomWalletProps {
   onWalletConnect?: (publicKey: string) => void;
@@ -16,15 +16,29 @@ export default function PhantomWallet({ onWalletConnect, className = "" }: Phant
   // Get wallet state from store
   const walletState = appStore.getState().wallet;
 
-  const handleButtonClick = async () => {
-    if (!isPhantomAvailable()) {
-      alert('Phantom wallet not found. Please install Phantom wallet from https://phantom.app/');
-      return;
-    }
+  // Debug function to check wallet status
+  const debugWalletStatus = () => {
+    console.log('🔍 Wallet Debug Info:');
+    console.log('- Window available:', typeof window !== 'undefined');
+    console.log('- Solana object:', typeof window !== 'undefined' ? (window as any).solana : 'N/A');
+    console.log('- Phantom available:', isPhantomAvailable());
+    console.log('- Wallet state:', walletState);
+  };
 
+  const handleButtonClick = async () => {
     setIsLoading(true);
     
     try {
+      // Debug wallet status
+      debugWalletStatus();
+      
+      // Wait for Phantom wallet to be available
+      const isAvailable = await waitForPhantom(5000);
+      if (!isAvailable) {
+        alert('Phantom wallet not found. Please install Phantom wallet from https://phantom.app/');
+        return;
+      }
+
       const result = await connectWallet();
       
       if (result.success && result.publicKey) {
