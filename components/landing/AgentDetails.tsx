@@ -8,7 +8,13 @@ const AgentDetails = () => {
   const [walletState, setWalletState] = useState(appStore.getState().wallet);
   const [isConnecting, setIsConnecting] = useState(false);
   const [user, setUser] = useState(getCurrentUser());
+  const [isClient, setIsClient] = useState(false);
   
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Subscribe to store changes
   useEffect(() => {
     const unsubscribe = appStore.subscribe((state) => {
@@ -129,13 +135,13 @@ const AgentDetails = () => {
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-semibold text-white font-mono tracking-wider">AGENT DETAILS</h3>
         <div className="flex space-x-1">
-          <div className={`w-2 h-2 rounded-full ${agentInfo.walletConnected ? 'bg-green-400 pulse-glow' : 'bg-accent-red pulse-glow'}`}></div>
-          <div className={`w-2 h-2 rounded-full ${agentInfo.walletConnected ? 'bg-green-300' : 'bg-accent-orange'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${isClient && agentInfo.walletConnected ? 'bg-green-400 pulse-glow' : 'bg-accent-red pulse-glow'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${isClient && agentInfo.walletConnected ? 'bg-green-300' : 'bg-accent-orange'}`}></div>
           <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
         </div>
       </div>
       <p className="text-gray-400 text-sm mb-6">
-        {agentInfo.walletConnected 
+        {isClient && agentInfo.walletConnected 
           ? `Connected via ${agentInfo.walletName} - Intelligence personnel dossier` 
           : 'Detailed dossier of intelligence personnel'
         }

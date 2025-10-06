@@ -77,7 +77,7 @@ const Header = () => {
           </p>
           
           {/* Navigation Menu */}
-          <div className="flex items-center space-x-4 mt-2">
+          <div className="flex items-center space-x-4 mt-2 flex-wrap">
             <Link 
               href="/"
               className={`text-xs font-mono px-3 py-1 rounded transition-all duration-200 ${
@@ -110,15 +110,24 @@ const Header = () => {
             </Link>
             <Link 
               href="/traffic-agent"
-              className={`text-xs font-mono px-3 py-1 rounded transition-all duration-200 ${
+              className={`text-xs capitalize font-mono px-3 py-1 rounded transition-all duration-200 ${
                 pathname === '/traffic-agent' 
                   ? 'bg-accent-red text-white' 
                   : 'text-gray-400 hover:text-white hover:bg-dark-border'
               }`}
             >
-              Agent Mission Control ( AMC )
+              AGENT MISSION CONTROL
             </Link>
-
+            <Link 
+              href="/agent-dashboard"
+              className={`text-xs font-mono px-3 py-1 rounded transition-all duration-200 ${
+                pathname === '/agent-dashboard' 
+                  ? 'bg-accent-red text-white' 
+                  : 'text-gray-400 hover:text-white hover:bg-dark-border'
+              }`}
+            >
+              AGENT DASHBOARD
+            </Link>
             <Link 
               href="http://status.agentmissioncontrol.com"
               target='_blank'
@@ -126,13 +135,26 @@ const Header = () => {
             >
               STATUS
             </Link>
-
             <Link 
               href="https://x.com/amcon_sol"
               target='_blank'
-              className='text-xs font-mono px-3 py-1 rounded transition-all duration-200 text-gray-400 hover:text-white hover:bg-dark-border'
+              className='text-xs capitalize font-mono px-3 py-1 rounded transition-all duration-200 text-gray-400 hover:text-white hover:bg-dark-border'
             >
               X
+            </Link>
+            <Link 
+              href="https://github.com/AnimiVR"
+              target='_blank'
+              className='text-xs capitalize font-mono px-3 py-1 rounded transition-all duration-200 text-gray-400 hover:text-white hover:bg-dark-border'
+            >
+              GITHUB
+            </Link>
+            <Link 
+              href="https://discord.gg/c53bZZNCnb"
+              target='_blank'
+              className='text-xs capitalize font-mono px-3 py-1 rounded transition-all duration-200 text-gray-400 hover:text-white hover:bg-dark-border'
+            >
+              DISCORD
             </Link>
           </div>
           
@@ -156,7 +178,7 @@ const Header = () => {
           
         </div>
         
-        <div className="flex items-center space-x-6">
+        <div className=" items-center space-x-6 hidden lg:flex">
           <div className="text-right">
             {pathname === '/leaderboard' ? (
               <>

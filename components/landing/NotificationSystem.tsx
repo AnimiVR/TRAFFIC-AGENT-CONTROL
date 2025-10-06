@@ -13,8 +13,15 @@ interface Notification {
 
 const NotificationSystem = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     // Simulate real-time notifications
     const interval = setInterval(() => {
       const missions = ['Ghost Protocol', 'Silent Storm', 'Iron Shield', 'Night Watch', 'Red Alert'];
@@ -30,66 +37,76 @@ const NotificationSystem = () => {
         timestamp: new Date(),
         read: false
       };
-      
-      setNotifications(prev => [newNotification, ...prev.slice(0, 4)]);
+
+      setNotifications(prev => [newNotification, ...prev.slice(0, 4)]); // Keep only 5 notifications
       
       // Trigger notification sound
       window.dispatchEvent(new CustomEvent('notification'));
     }, 15000); // Every 15 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isClient]);
 
   const removeNotification = (id: number) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
   const markAsRead = (id: number) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+    setNotifications(prev => prev.map(n => 
+      n.id === id ? { ...n, read: true } : n
+    ));
   };
 
+  if (!isClient) return null;
+
   return (
-    <div className="fixed top-4 right-4 z-40 space-y-2">
-      {notifications.map((notification) => (
+    <div className="fixed top-4 right-4 z-50 space-y-2">
+      {notifications.map(notification => (
         <div
           key={notification.id}
-          className={`bg-dark-card border border-dark-border rounded-lg p-4 shadow-2xl min-w-80 max-w-96 animate-in slide-in-from-right duration-300 ${
-            notification.read ? 'opacity-70' : 'glow-effect'
+          className={`glass-effect rounded-lg p-4 max-w-sm transition-all duration-300 transform ${
+            notification.read ? 'opacity-60' : 'opacity-100'
+          } ${
+            notification.type === 'mission' 
+              ? 'border-l-4 border-green-400' 
+              : 'border-l-4 border-red-400'
           }`}
+          style={{
+            animation: 'slideInRight 0.3s ease-out'
+          }}
         >
-          <div className="flex items-start space-x-3">
-            <div className={`w-3 h-3 rounded-full mt-1 ${
-              notification.type === 'mission' ? 'bg-accent-red' : 'bg-yellow-400'
-            } pulse-glow`}></div>
-            
+          <div className="flex items-start justify-between">
             <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-white">{notification.title}</h4>
-                <button
-                  onClick={() => removeNotification(notification.id)}
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <p className="text-sm text-gray-300 mt-1">{notification.message}</p>
-              
-              <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center space-x-2 mb-1">
+                <span className={`text-xs font-bold ${
+                  notification.type === 'mission' ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {notification.type.toUpperCase()}
+                </span>
                 <span className="text-xs text-gray-400">
                   {notification.timestamp.toLocaleTimeString()}
                 </span>
-                <button
-                  onClick={() => markAsRead(notification.id)}
-                  className="text-xs text-accent-red hover:text-accent-orange transition-colors duration-200"
-                >
-                  {notification.read ? 'Read' : 'Mark as read'}
-                </button>
               </div>
+              <h4 className="text-sm font-semibold text-white mb-1">
+                {notification.title}
+              </h4>
+              <p className="text-xs text-gray-300">
+                {notification.message}
+              </p>
+            </div>
+            <div className="flex space-x-1 ml-2">
+              <button
+                onClick={() => markAsRead(notification.id)}
+                className="text-xs text-gray-400 hover:text-white transition-colors"
+              >
+                ✓
+              </button>
+              <button
+                onClick={() => removeNotification(notification.id)}
+                className="text-xs text-gray-400 hover:text-red-400 transition-colors"
+              >
+                ×
+              </button>
             </div>
           </div>
         </div>

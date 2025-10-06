@@ -8,10 +8,17 @@ interface LiveDataUpdaterProps {
 
 const LiveDataUpdater: React.FC<LiveDataUpdaterProps> = ({ children }) => {
   const [isLive, setIsLive] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (!isLive) return;
+    // Set client flag and initial time
+    setIsClient(true);
+    setLastUpdate(new Date());
+  }, []);
+
+  useEffect(() => {
+    if (!isLive || !isClient) return;
 
     const interval = setInterval(() => {
       setLastUpdate(new Date());
@@ -20,7 +27,7 @@ const LiveDataUpdater: React.FC<LiveDataUpdaterProps> = ({ children }) => {
     }, 5000); // Update every 5 seconds
 
     return () => clearInterval(interval);
-  }, [isLive]);
+  }, [isLive, isClient]);
 
   return (
     <div className="relative">
@@ -44,7 +51,7 @@ const LiveDataUpdater: React.FC<LiveDataUpdaterProps> = ({ children }) => {
       <div className="absolute top-2 left-2 z-10">
         <div className="bg-dark-card/80 backdrop-blur-sm border border-dark-border rounded-lg px-3 py-1">
           <span className="text-xs text-gray-400">
-            Last update: {lastUpdate.toLocaleTimeString()}
+            Last update: {isClient && lastUpdate ? lastUpdate.toLocaleTimeString() : '--:--:--'}
           </span>
         </div>
       </div>

@@ -1,14 +1,39 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 const SoundEffects = () => {
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+
   useEffect(() => {
-    // Create audio context for sound effects
-    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    // Initialize audio context
+    const initAudioContext = async () => {
+      try {
+        const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+        setAudioContext(ctx);
+        
+        // Try to resume if suspended
+        if (ctx.state === 'suspended') {
+          await ctx.resume();
+        }
+        
+        setIsSoundEnabled(true);
+        console.log('Sound system initialized successfully');
+      } catch (error) {
+        console.log('Sound system initialization failed:', error);
+        setIsSoundEnabled(false);
+      }
+    };
+
+    initAudioContext();
+  }, []);
+
+  // Sound effect functions
+  const playClickSound = useCallback(() => {
+    if (!audioContext || !isSoundEnabled) return;
     
-    // Sound effect functions
-    const playClickSound = () => {
+    try {
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
       
@@ -18,14 +43,43 @@ const SoundEffects = () => {
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
       
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
       
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.1);
-    };
+    } catch (error) {
+      console.log('Click sound failed:', error);
+    }
+  }, [audioContext, isSoundEnabled]);
+  
+  const playHoverSound = useCallback(() => {
+    if (!audioContext || !isSoundEnabled) return;
     
-    const playNotificationSound = () => {
+    try {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.05);
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.05);
+    } catch (error) {
+      console.log('Hover sound failed:', error);
+    }
+  }, [audioContext, isSoundEnabled]);
+  
+  const playNotificationSound = useCallback(() => {
+    if (!audioContext || !isSoundEnabled) return;
+    
+    try {
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
       
@@ -36,114 +90,104 @@ const SoundEffects = () => {
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.1);
       oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.2);
       
-      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
       
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
-    };
-    
-    const playHoverSound = () => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.05);
-      
-      gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.05);
-    };
-    
-    // Helper function to safely check if element has class
-    const hasClass = (element: HTMLElement, className: string): boolean => {
-      return element && element.classList && element.classList.contains(className);
-    };
+    } catch (error) {
+      console.log('Notification sound failed:', error);
+    }
+  }, [audioContext, isSoundEnabled]);
 
-    // Helper function to safely check if element is inside a parent with selector
-    const hasParentWithSelector = (element: HTMLElement, selector: string): boolean => {
-      if (!element || !element.closest) return false;
-      try {
-        return !!element.closest(selector);
-      } catch {
-        return false;
-      }
-    };
-
-    // Helper function to safely check if element is button or has specific classes
-    const isInteractiveElement = (element: HTMLElement): boolean => {
-      if (!element) return false;
-      
-      try {
-        // Check if it's a button
-        if (element.tagName === 'BUTTON') return true;
-        
-        // Check if it has interactive classes
-        if (hasClass(element, 'clickable') || 
-            hasClass(element, 'hover-sound') || 
-            hasClass(element, 'card-hover')) return true;
-        
-        // Check if it's inside a button or interactive element
-        if (hasParentWithSelector(element, 'button') || 
-            hasParentWithSelector(element, '.card-hover') ||
-            hasParentWithSelector(element, '.hover-sound')) return true;
-        
-        return false;
-      } catch (error) {
-        console.warn('Error checking interactive element:', error);
-        return false;
-      }
-    };
-
-    // Add event listeners for sound effects
-    const addSoundListeners = () => {
-      // Click sounds for buttons
-      document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (isInteractiveElement(target)) {
-          playClickSound();
-        }
-      });
-      
-      // Hover sounds for interactive elements
-      document.addEventListener('mouseenter', (e) => {
-        const target = e.target as HTMLElement;
-        if (isInteractiveElement(target)) {
-          playHoverSound();
-        }
-      }, true);
-      
-      // Notification sounds
-      window.addEventListener('notification', () => {
-        playNotificationSound();
-      });
-    };
+  // Helper function to safely check if element is interactive
+  const isInteractiveElement = (element: HTMLElement): boolean => {
+    if (!element) return false;
     
-    // Initialize sound system
-    const initSoundSystem = async () => {
-      try {
-        if (audioContext.state === 'suspended') {
-          await audioContext.resume();
-        }
-        addSoundListeners();
-      } catch (error) {
-        console.log('Sound system not available:', error);
+    try {
+      // Check if it's a button
+      if (element.tagName === 'BUTTON') return true;
+      
+      // Check if it has interactive classes
+      if (element.classList.contains('clickable') || 
+          element.classList.contains('hover-sound') || 
+          element.classList.contains('card-hover') ||
+          element.classList.contains('cursor-pointer')) return true;
+      
+      // Check if it's inside a button or interactive element
+      if (element.closest('button') || 
+          element.closest('.card-hover') ||
+          element.closest('.hover-sound') ||
+          element.closest('.cursor-pointer')) return true;
+      
+      return false;
+    } catch {
+      return false;
+    }
+  };
+
+  // Add event listeners for sound effects
+  useEffect(() => {
+    if (!isSoundEnabled) return;
+
+    const handleClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (isInteractiveElement(target)) {
+        playClickSound();
       }
     };
     
-    initSoundSystem();
+    const handleHover = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (isInteractiveElement(target)) {
+        playHoverSound();
+      }
+    };
     
+    const handleNotification = () => {
+      playNotificationSound();
+    };
+
+    // Add event listeners
+    document.addEventListener('click', handleClick);
+    document.addEventListener('mouseenter', handleHover, true);
+    window.addEventListener('notification', handleNotification);
+    
+    // Cleanup
     return () => {
-      // Cleanup
-      audioContext.close();
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('mouseenter', handleHover, true);
+      window.removeEventListener('notification', handleNotification);
     };
-  }, []);
-  
+  }, [isSoundEnabled, playClickSound, playHoverSound, playNotificationSound]);
+
+  // Enable sound on user interaction
+  const enableSound = async () => {
+    if (audioContext && audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume();
+        setIsSoundEnabled(true);
+        console.log('Sound enabled by user interaction');
+      } catch (error) {
+        console.log('Failed to enable sound:', error);
+      }
+    }
+  };
+
+  // Show sound enable button if sound is disabled
+  if (!isSoundEnabled) {
+    return (
+      <div className="fixed top-4 left-4 z-50">
+        <button
+          onClick={enableSound}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-mono transition-colors duration-200"
+        >
+          🔊 Enable Sound
+        </button>
+      </div>
+    );
+  }
+
   return null;
 };
 

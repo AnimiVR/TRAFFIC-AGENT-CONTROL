@@ -19,7 +19,7 @@ export default function TrafficAgentPage() {
       <header className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl tracking-tighter font-bold text-gray-500 text-spacing-px">Agent Mission Control ( AMC )</h1>
+            <h1 className="text-2xl tracking-tighter font-bold text-gray-500 text-spacing-px">Traffic Agent Control</h1>
             <p className="mt-1 text-[10px] leading-none text-gray-500">
               <a
                 href="https://github.com/AnimiVR/TRAFFIC-AGENT-CONTROL"

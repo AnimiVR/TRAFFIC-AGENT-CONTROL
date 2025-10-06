@@ -14,9 +14,22 @@ const AgentActivity = () => {
   });
   const [isHovered, setIsHovered] = useState(false);
   const [pulseIntensity, setPulseIntensity] = useState(1);
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [particlePositions, setParticlePositions] = useState<number[]>([]);
+
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+    // Generate initial particle positions
+    setParticlePositions([Math.random() * 100, Math.random() * 100, Math.random() * 100]);
+  }, []);
 
   // Live data simulation
   useEffect(() => {
+    if (!isClient) return;
+    
     const interval = setInterval(() => {
       setLiveData(prev => ({
         total: prev.total + Math.floor(Math.random() * 3) - 1,
@@ -26,10 +39,22 @@ const AgentActivity = () => {
         mediumRisk: prev.mediumRisk + Math.floor(Math.random() * 2) - 1,
         lowRisk: prev.lowRisk + Math.floor(Math.random() * 2) - 1
       }));
+      // Update particle positions
+      setParticlePositions([Math.random() * 100, Math.random() * 100, Math.random() * 100]);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isClient]);
+
+  // Time update
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isClient]);
 
   // Animation phase
 
@@ -187,14 +212,14 @@ const AgentActivity = () => {
                 }}
               />
               {/* Animated particles */}
-              {risk.pulse && (
+              {risk.pulse && isClient && (
                 <div className="absolute inset-0">
                   {[...Array(3)].map((_, i) => (
                     <div
                       key={i}
                       className="absolute w-1 h-1 bg-white rounded-full opacity-60"
                       style={{
-                        left: `${Math.random() * 100}%`,
+                        left: `${particlePositions[i] || 0}%`,
                         top: '50%',
                         transform: 'translateY(-50%)',
                         animation: `particleFloat ${2 + i * 0.5}s ease-in-out infinite`,
@@ -251,7 +276,7 @@ const AgentActivity = () => {
             <span className="text-yellow-400">● {liveData.highRisk} HIGH RISK</span>
           </div>
           <div className="text-accent-orange font-mono">
-            {new Date().toLocaleTimeString()}
+            {isClient && currentTime ? currentTime.toLocaleTimeString() : '--:--:--'}
           </div>
         </div>
       </div>

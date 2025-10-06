@@ -10,6 +10,14 @@ const BriefAnnouncement = () => {
     "1231...", "54.50", "4.", "54", "87867", 
     "4.", "546..", ".4..", "4657..", "8.2..."
   ]);
+  const [isClient, setIsClient] = useState(false);
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [particles, setParticles] = useState<Array<{
+    left: number;
+    top: number;
+    duration: number;
+    delay: number;
+  }>>([]);
 
   // Simulate data scanning animation
   useEffect(() => {
@@ -27,8 +35,37 @@ const BriefAnnouncement = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+    
+    // Generate particles only on client
+    setParticles(
+      [...Array(6)].map((_, i) => ({
+        left: 20 + i * 15,
+        top: 30 + Math.sin(Date.now() / 1000 + i) * 20,
+        duration: 2 + i * 0.5,
+        delay: i * 0.3
+      }))
+    );
+  }, []);
+
+  // Update time every second
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [isClient]);
+
   // Random data update animation
   useEffect(() => {
+    if (!isClient) return;
+    
     const interval = setInterval(() => {
       setDataPoints(prev => prev.map(point => {
         if (Math.random() > 0.7) {
@@ -38,18 +75,16 @@ const BriefAnnouncement = () => {
         }
         return point;
       }));
+      
+      // Update particles
+      setParticles(prev => prev.map((particle, i) => ({
+        ...particle,
+        top: 30 + Math.sin(Date.now() / 1000 + i) * 20
+      })));
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isClient]);
 
-  const getCurrentTime = () => {
-    const now = new Date();
-    return now.toLocaleString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  };
 
   return (
     <div 
@@ -142,15 +177,15 @@ const BriefAnnouncement = () => {
         <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-cyan-400 opacity-60 animate-pulse"></div>
 
         {/* Floating data particles */}
-        {[...Array(6)].map((_, i) => (
+        {isClient && particles.map((particle, i) => (
           <div
             key={`particle-${i}`}
             className="floating-particle absolute w-1 h-1 bg-cyan-400 rounded-full opacity-60"
             style={{
-              left: `${20 + i * 15}%`,
-              top: `${30 + Math.sin(Date.now() / 1000 + i) * 20}%`,
-              animationDuration: `${2 + i * 0.5}s`,
-              animationDelay: `${i * 0.3}s`
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              animationDuration: `${particle.duration}s`,
+              animationDelay: `${particle.delay}s`
             }}
           ></div>
         ))}
@@ -158,7 +193,11 @@ const BriefAnnouncement = () => {
 
       {/* Status bar */}
       <div className="flex items-center justify-between text-xs text-gray-400 mt-4">
-        <span>Last scan: {getCurrentTime()}</span>
+        <span>Last scan: {isClient && currentTime ? currentTime.toLocaleString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }) : '--:--:--'}</span>
         <div className="flex items-center space-x-2">
           <div className="w-16 h-1 bg-gray-700 rounded-full overflow-hidden">
             <div 

@@ -20,9 +20,29 @@ const Leaderboard: React.FC = () => {
   const [currentUser] = useState(getCurrentUser());
   const [sortBy, setSortBy] = useState<'total_points' | 'level' | 'created_at'>('total_points');
   const [timeFilter, setTimeFilter] = useState<'all' | 'week' | 'month'>('all');
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+  }, []);
+
+  // Time update
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isClient]);
 
   // Load leaderboard data
   useEffect(() => {
+    if (!isClient) return;
+    
     const loadLeaderboard = async () => {
       try {
         setLoading(true);
@@ -68,7 +88,7 @@ const Leaderboard: React.FC = () => {
     };
 
     loadLeaderboard();
-  }, [sortBy, timeFilter]);
+  }, [sortBy, timeFilter, isClient]);
 
   // Get current user's rank
   const getCurrentUserRank = () => {
@@ -234,7 +254,7 @@ const Leaderboard: React.FC = () => {
       <div className="mt-6 pt-4 border-t border-dark-border">
         <div className="flex justify-between items-center text-xs text-gray-500">
           <span className="font-mono">Total Agents: {users.length}</span>
-          <span className="font-mono">Last Updated: {new Date().toLocaleTimeString()}</span>
+          <span className="font-mono">Last Updated: {isClient && currentTime ? currentTime.toLocaleTimeString() : '--:--:--'}</span>
         </div>
       </div>
     </div>

@@ -4,10 +4,12 @@ import React from 'react';
 import TargetOperation from './TargetOperation';
 import GlobeMap from './GlobeMap';
 import DataChart from './DataChart';
+import AgentDataOverview from './AgentDataOverview';
 
 const CenterColumn = () => {
   return (
     <div className="space-y-6">
+      <AgentDataOverview />
       <TargetOperation 
         region="USA" 
         description="Intelligence confirms the world's most notorious drug trafficker was last seen in this area 30 minutes ago. Surveillance teams are on high alert."

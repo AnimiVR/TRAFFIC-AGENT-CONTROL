@@ -1,6 +1,6 @@
 # Agent Mission Control ( AMC )
 
-A minimal Next.js dashboard to monitor and control AI agent traffic. View live at https://agenttrafficcontrol.com.
+A minimal Next.js dashboard to monitor and control AI agent traffic. View live at https://www.agentmissioncontrol.com/traffic-agent.
 
 Best with full screen and sound on.
 

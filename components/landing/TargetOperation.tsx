@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import OperationsModal from './OperationsModal';
 
 interface TargetOperationProps {
@@ -78,10 +78,19 @@ const TargetOperation: React.FC<TargetOperationProps> = ({ region }) => {
   const [scanProgress, setScanProgress] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCountry, setCurrentCountry] = useState(() => {
-    // Khởi tạo với quốc gia từ props hoặc random
+    // Khởi tạo với quốc gia từ props hoặc default
     const initialCountry = region ? COUNTRIES_DATA.find(c => c.name === region) : null;
-    return initialCountry || COUNTRIES_DATA[Math.floor(Math.random() * COUNTRIES_DATA.length)];
+    return initialCountry || COUNTRIES_DATA[0]; // Default to first country instead of random
   });
+  const [isClient, setIsClient] = useState(false);
+  const [globeData, setGlobeData] = useState<{
+    longitudeLines: Array<{x1: number, y1: number, x2: number, y2: number}>;
+    latitudeLines: Array<{cx: number, cy: number, rx: number, ry: number}>;
+    targetX: number;
+    targetY: number;
+    satellites: Array<{x: number, y: number}>;
+    connections: Array<{x1: number, y1: number, x2: number, y2: number}>;
+  } | null>(null);
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -110,25 +119,97 @@ const TargetOperation: React.FC<TargetOperationProps> = ({ region }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Random country change every 20 seconds
+  // Initialize client-side state and calculate globe data
   useEffect(() => {
+    setIsClient(true);
+    
+    // Calculate globe data only on client
+    const centerX = 200;
+    const centerY = 150;
+    const radius = 80;
+    
+    // Calculate longitude lines
+    const longitudeLines = [...Array(12)].map((_, i) => {
+      const angle = (i * 30) * Math.PI / 180;
+      const x1 = centerX + Math.cos(angle) * radius;
+      const y1 = centerY + Math.sin(angle) * radius;
+      const x2 = centerX - Math.cos(angle) * radius;
+      const y2 = centerY - Math.sin(angle) * radius;
+      return { x1, y1, x2, y2 };
+    });
+    
+    // Calculate latitude lines
+    const latitudeLines = [-60, -30, 0, 30, 60].map((lat) => {
+      const y = centerY + Math.sin(lat * Math.PI / 180) * radius;
+      const width = Math.cos(lat * Math.PI / 180) * radius * 2;
+      return { cx: centerX, cy: y, rx: width/2, ry: 2 };
+    }).filter(line => line.rx > 0);
+    
+    // Calculate target position
+    const targetX = centerX + Math.cos(currentCountry.angle * Math.PI / 180) * radius * 0.7;
+    const targetY = centerY + Math.sin(currentCountry.angle * Math.PI / 180) * radius * 0.7;
+    
+    setGlobeData({
+      longitudeLines,
+      latitudeLines,
+      targetX,
+      targetY,
+      satellites: [], // Will be calculated in another useEffect
+      connections: [] // Will be calculated in another useEffect
+    });
+  }, [currentCountry]);
+
+  // Calculate satellites and connections based on scanProgress
+  const updateSatellitesAndConnections = useCallback(() => {
+    if (!isClient || !globeData) return;
+    
+    const centerX = 200;
+    const centerY = 150;
+    const radius = 80;
+    
+    // Calculate satellites positions
+    const satellites = [...Array(3)].map((_, i) => {
+      const angle = (scanProgress * 3.6 + i * 120) * Math.PI / 180;
+      const x = centerX + Math.cos(angle) * (radius + 20);
+      const y = centerY + Math.sin(angle) * (radius + 20) * 0.6;
+      return { x, y };
+    });
+    
+    // Calculate connection lines
+    const connections = satellites.map(sat => ({
+      x1: centerX,
+      y1: centerY,
+      x2: sat.x,
+      y2: sat.y
+    }));
+    
+    setGlobeData(prev => prev ? {
+      ...prev,
+      satellites,
+      connections
+    } : null);
+  }, [isClient, scanProgress, globeData]);
+
+  useEffect(() => {
+    updateSatellitesAndConnections();
+  }, [updateSatellitesAndConnections]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * COUNTRIES_DATA.length);
       setCurrentCountry(COUNTRIES_DATA[randomIndex]);
     }, 20000); // 20 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isClient]);
 
   const getGlobeSVG = () => {
     const centerX = 200;
     const centerY = 150;
     const radius = 80;
     const rotationAngle = scanProgress * 3.6; // 360 degrees over 100 progress
-    
-    // Calculate target position based on current country
-    const targetX = centerX + Math.cos(currentCountry.angle * Math.PI / 180) * radius * 0.7;
-    const targetY = centerY + Math.sin(currentCountry.angle * Math.PI / 180) * radius * 0.7;
 
     return (
       <svg viewBox="0 0 400 300" className="w-full h-48">
@@ -170,28 +251,14 @@ const TargetOperation: React.FC<TargetOperationProps> = ({ region }) => {
         <circle cx={centerX} cy={centerY} r={radius} fill="url(#globeHighlight)" stroke="none"/>
         
         {/* Longitude lines */}
-        {[...Array(12)].map((_, i) => {
-          const angle = (i * 30) * Math.PI / 180;
-          const x1 = centerX + Math.cos(angle) * radius;
-          const y1 = centerY + Math.sin(angle) * radius;
-          const x2 = centerX - Math.cos(angle) * radius;
-          const y2 = centerY - Math.sin(angle) * radius;
-          return (
-            <line key={`long-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#333" strokeWidth="0.5" opacity="0.4"/>
-          );
-        })}
+        {isClient && globeData && globeData.longitudeLines.map((line, i) => (
+          <line key={`long-${i}`} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} stroke="#333" strokeWidth="0.5" opacity="0.4"/>
+        ))}
         
         {/* Latitude lines */}
-        {[-60, -30, 0, 30, 60].map((lat, i) => {
-          const y = centerY + Math.sin(lat * Math.PI / 180) * radius;
-          const width = Math.cos(lat * Math.PI / 180) * radius * 2;
-          if (width > 0) {
-            return (
-              <ellipse key={`lat-${i}`} cx={centerX} cy={y} rx={width/2} ry="2" fill="none" stroke="#333" strokeWidth="0.5" opacity="0.4"/>
-            );
-          }
-          return null;
-        })}
+        {isClient && globeData && globeData.latitudeLines.map((line, i) => (
+          <ellipse key={`lat-${i}`} cx={line.cx} cy={line.cy} rx={line.rx} ry={line.ry} fill="none" stroke="#333" strokeWidth="0.5" opacity="0.4"/>
+        ))}
         
         {/* Rotating continents */}
         <g transform={`rotate(${rotationAngle} ${centerX} ${centerY})`}>
@@ -217,47 +284,41 @@ const TargetOperation: React.FC<TargetOperationProps> = ({ region }) => {
         </g>
         
         {/* Target marker */}
-        <circle cx={targetX} cy={targetY} r="8" fill="#ff4444" stroke="#ff6666" strokeWidth="2" opacity={pulseIntensity}>
-          <animate attributeName="r" values="6;10;6" dur="1s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
-        </circle>
-        
-        {/* Target crosshairs */}
-        <line x1={targetX-12} y1={targetY} x2={targetX+12} y2={targetY} stroke="#fff" strokeWidth="1" opacity="0.8"/>
-        <line x1={targetX} y1={targetY-12} x2={targetX} y2={targetY+12} stroke="#fff" strokeWidth="1" opacity="0.8"/>
-        
-        {/* Scanning beam */}
-        <line x1={centerX} y1={centerY} x2={targetX} y2={targetY} stroke="#00ff00" strokeWidth="2" opacity="0.6">
-          <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1s" repeatCount="indefinite"/>
-        </line>
+        {isClient && globeData && (
+          <>
+            <circle cx={globeData.targetX} cy={globeData.targetY} r="8" fill="#ff4444" stroke="#ff6666" strokeWidth="2" opacity={pulseIntensity}>
+              <animate attributeName="r" values="6;10;6" dur="1s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            
+            {/* Target crosshairs */}
+            <line x1={globeData.targetX-12} y1={globeData.targetY} x2={globeData.targetX+12} y2={globeData.targetY} stroke="#fff" strokeWidth="1" opacity="0.8"/>
+            <line x1={globeData.targetX} y1={globeData.targetY-12} x2={globeData.targetX} y2={globeData.targetY+12} stroke="#fff" strokeWidth="1" opacity="0.8"/>
+            
+            {/* Scanning beam */}
+            <line x1={centerX} y1={centerY} x2={globeData.targetX} y2={globeData.targetY} stroke="#00ff00" strokeWidth="2" opacity="0.6">
+              <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1s" repeatCount="indefinite"/>
+            </line>
+          </>
+        )}
         
         {/* Orbital rings */}
         <ellipse cx={centerX} cy={centerY} rx={radius+15} ry={(radius+15)*0.6} fill="none" stroke="#444" strokeWidth="1" opacity="0.3"/>
         <ellipse cx={centerX} cy={centerY} rx={radius+25} ry={(radius+25)*0.6} fill="none" stroke="#444" strokeWidth="1" opacity="0.2"/>
         
         {/* Data satellites */}
-        {[...Array(3)].map((_, i) => {
-          const angle = (scanProgress * 3.6 + i * 120) * Math.PI / 180;
-          const x = centerX + Math.cos(angle) * (radius + 20);
-          const y = centerY + Math.sin(angle) * (radius + 20) * 0.6;
-          return (
-            <circle key={`sat-${i}`} cx={x} cy={y} r="2" fill="#00ff00" opacity="0.8">
-              <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
-            </circle>
-          );
-        })}
+        {isClient && globeData && globeData.satellites.map((sat, i) => (
+          <circle key={`sat-${i}`} cx={sat.x} cy={sat.y} r="2" fill="#00ff00" opacity="0.8">
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+          </circle>
+        ))}
         
         {/* Connection lines to satellites */}
-        {[...Array(3)].map((_, i) => {
-          const angle = (scanProgress * 3.6 + i * 120) * Math.PI / 180;
-          const x = centerX + Math.cos(angle) * (radius + 20);
-          const y = centerY + Math.sin(angle) * (radius + 20) * 0.6;
-          return (
-            <line key={`conn-${i}`} x1={centerX} y1={centerY} x2={x} y2={y} stroke="#444" strokeWidth="0.5" opacity="0.3">
-              <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite"/>
-            </line>
-          );
-        })}
+        {isClient && globeData && globeData.connections.map((conn, i) => (
+          <line key={`conn-${i}`} x1={conn.x1} y1={conn.y1} x2={conn.x2} y2={conn.y2} stroke="#444" strokeWidth="0.5" opacity="0.3">
+            <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite"/>
+          </line>
+        ))}
         
         {/* Status text */}
         <text x={centerX} y={centerY+radius+25} textAnchor="middle" className="fill-white text-xs font-mono">

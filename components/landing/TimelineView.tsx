@@ -12,8 +12,28 @@ interface TimelineData {
 
 const TimelineView = () => {
   const [timelineData, setTimelineData] = useState<TimelineData[]>([]);
+  const [isClient, setIsClient] = useState(false);
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+  }, []);
+
+  // Update time every second
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [isClient]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     // Listen for time range changes from header
     const handleTimeRangeChange = (event: CustomEvent) => {
       generateTimelineData(event.detail.range);
@@ -25,7 +45,7 @@ const TimelineView = () => {
     generateTimelineData('1d');
 
     return () => window.removeEventListener('timeRangeChange', handleTimeRangeChange as EventListener);
-  }, []);
+  }, [isClient]);
 
   const generateTimelineData = (range: string) => {
     const data: TimelineData[] = [];
@@ -137,7 +157,7 @@ const TimelineView = () => {
       <div className="mt-4 pt-4 border-t border-dark-border">
         <div className="flex items-center justify-between text-xs text-gray-400">
           <span>Showing {timelineData.length} data points</span>
-          <span>Last updated: {new Date().toLocaleTimeString()}</span>
+          <span>Last updated: {isClient && currentTime ? currentTime.toLocaleTimeString() : '--:--:--'}</span>
         </div>
       </div>
     </div>
