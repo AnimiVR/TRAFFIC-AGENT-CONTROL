@@ -109,7 +109,8 @@ const Header = () => {
               DOCS
             </Link>
             <Link 
-              href="https://www.agentmissioncontrol.com//traffic-agent"
+              href="https://www.agentmissioncontrol.com/traffic-agent"
+              target='_blank'
               className={`text-xs capitalize font-mono px-3 py-1 rounded transition-all duration-200 ${
                 pathname === '/traffic-agent' 
                   ? 'bg-accent-red text-white' 
@@ -119,7 +120,8 @@ const Header = () => {
               AGENT MISSION CONTROL
             </Link>
             <Link 
-              href="https://www.agentmissioncontrol.com//agent-dashboard"
+              href="https://www.agentmissioncontrol.com/agent-dashboard"
+              target='_blank'
               className={`text-xs font-mono px-3 py-1 rounded transition-all duration-200 ${
                 pathname === '/agent-dashboard' 
                   ? 'bg-accent-red text-white' 
